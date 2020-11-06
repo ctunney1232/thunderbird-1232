@@ -1,56 +1,93 @@
+
 <html>
 <head>
-	<title>Lab 2 part 2</title>
-	<!-- the Leaflet CSS -->
-	<link rel="stylesheet" href="https://unpkg.com/leaflet@1.5.1/dist/leaflet.css"/>
-	<!-- the Leaflet JavaScript library -->
-	<script src="https://unpkg.com/leaflet@1.5.1/dist/leaflet.js"></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<title>Intro to Leaflet</title>
+<!-- the Leaflet CSS -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.5.1/dist/leaflet.css"/>
+<!-- the Leaflet JavaScript library -->
+<script src="https://unpkg.com/leaflet@1.5.1/dist/leaflet.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src= "https://cdn.jsdelivr.net/npm/leaflet-legend@1.0.2/leaflet-legend.min.js"></script>
+<style>
+body {
+  font-family: sans-serif;
+  max-width: 900px;
+  margin: auto;
+}
+#legend {
+		line-height: 0px;
+		background: white;
+		opacity: 0.8;
+		padding:5px 25px 5px 0px;
+	}
+</style>
 </head>
 
 <body>
-	<div class="header">
-			<h1>Covid-19 and Nursing Homes</h1>
-	</div>
-	<!-- code where we create and name the container that holds the map -->
-	<div id="map" style="height: 80%"></div>
-	<p>This map shows data taken from Washington Geospatial Open Data portal representing nursing home locations and daily Corona virus cases in each county in Washington State. Nursing homes are a dangerous place for the proliferation of Covid-19. Understanding the risk level in each county is important for monitering and maintaining regulations regarding the virus, especially in areas that have high concentrations of elderly.</p>
-	<!-- code where we build the map and its functionality -->
-	<script>
-		var mymap = L.map('map').setView([47.2, -120.5], 7.3);
-		var basemap = L.tileLayer('https://stamen-tiles-{s}.a.ssl.fastly.net/terrain/{z}/{x}/{y}{r}.png', {
-			attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-		}).addTo(mymap);
+<h1>Earthquakes that have occurred in the past 24 hours</h1>
+<!-- code where we create and name the container that holds the map -->
+<div id="map" style="height: 80%"></div>
+<p>This map depicts all earthquakes that have occurred in the past 24 hours. Data comes from the <a href="https://earthquake.usgs.gov/earthquakes/feed/v1.0/geojson.php">USGS Live Earthquake Feed</a> and is updated every minute. Earthquakes are visualized with proportional symbols where earthquakes of larger magnitude are depicted with larger circle markers. Click on a marker for more information about the earthquake.</p>
+<p>The Pacific Northwest lies along the Cascadia fault. Tectonic activity along this fault could cause a catastrophic earthquake that would produce major damage throughout our region. Learn about how researchers at the University of Washington are modelling earthquake risk and preparing for disaster response at the <a href="https://hazards.uw.edu/geology/m9/">M9 Project</a>.</p>
 
-		$.getJSON("https://opendata.arcgis.com/datasets/99d6ae7787bc4a739c7885eb5ca25b37_0.geojson",function(data){
-    	L.geoJson(data, {
-				style: function(feature){
-				        var fillColor,
-				            CV_Cases_Today = feature.properties.CV_Cases_Today;
-				        if ( CV_Cases_Today > 200 ) fillColor = "#b30000";
-				        else if ( CV_Cases_Today > 150 ) fillColor = "#e34a33";
-				        else if ( CV_Cases_Today > 100 ) fillColor = "#fc8d59";
-				        else if ( CV_Cases_Today > 50 ) fillColor = "#fdbb84";
-				        else if ( CV_Cases_Today > 20 ) fillColor = "#fdd49e";
-				        else fillColor = "#fef0d9";  // no data
-				        return { color: "white", weight: 1, fillColor: fillColor, fillOpacity: .6 };
-				      },
-							onEachFeature: function( feature, layer ){
-        layer.bindPopup( "<strong>" + feature.properties.CNTY_NAME + "</strong><br/>" + feature.properties.CV_Cases_Today + "Covid Cases Today" )
-      }
-			}).addTo(mymap);
-		});
+  <div id="legend">
+  		<h3><center>Earthquake magnitude</center></h3>
+  		<ul style="list-style-type:none">
+  			<li>
+  				<svg width="24" height="24">
+  					<circle cx="12" cy="20" r="2" stroke="red" stroke-width="3" fill="red" fill-opacity=".4"/>
+  				</svg>
+  				<text>Less than 1</text>
+  			</li>
+  			<li>
+  				<svg width="24" height="24">
+  					<circle cx="12" cy="18" r="4" stroke="red" stroke-width="3" fill="red" fill-opacity=".4"/>
+  				</svg>
+  				<text>Between 1 and 2.5</text>
+  			</li>
+  			<li>
+  				<svg width="24" height="24">
+  					<circle cx="12" cy="14" r="6" stroke="red" stroke-width="3" fill="red" fill-opacity=".4"/>
+  				</svg>
+  				<text>Between 2.5 and 4.5</text>
+  			</li>
+  			<li>
+  				<svg width="24" height="24">
+  					<circle cx="12" cy="12" r="10" stroke="red" stroke-width="3" fill="red" fill-opacity=".4"/>
+  				</svg>
+  				<text x="0" y="0)">Greater than 4.5</text>
+  			</li>
+  		</ul>
+  	</div>
 
-			$.getJSON("https://opendata.arcgis.com/datasets/08be3e4013f845748c0c838236d9d675_1.geojson",function(data){
-				L.geoJSON(data, {
-					pointToLayer: function(feature, latlng){
-					 var marker = L.marker(latlng);
-					 marker.bindPopup("Facility: " + feature.properties.nf_name  + "<br>County: " + feature.properties.NF_County_Name);
-					 return marker;
-			 }
-				}).addTo(mymap);
-			})
+<!-- code where we build the map and its functionality -->
+<script>
+  var mymap = L.map('map').setView([0, 0], 2);
+  var basemap = L.tileLayer('https://stamen-tiles-{s}.a.ssl.fastly.net/terrain/{z}/{x}/{y}{r}.png', {
+    attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+  }).addTo(mymap);
+  // load GeoJSON from an external file and add it to the map
+  $.getJSON("https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_day.geojson",function(data){
+      L.geoJson(data, {
+        pointToLayer: function(feature, latlng){
+          var radiusSize,
+          mag = feature.properties.mag;
+              if (mag > 4.5) radiusSize = 10;
+              else if (mag > 2.5) radiusSize = 6;
+              else if (mag > 1) radiusSize =4;
+              else radiusSize = 2;
+          var marker = L.circleMarker(latlng, {radius: radiusSize, color: 'red'});
+          marker.bindPopup("Location: " + feature.properties.place + "<br>Magnitude: "+ feature.properties.mag + "<br><a href =" + feature.properties.url +">More info</a>");
+          return marker;
+        }
+      }).addTo(mymap);
+  });
+  var Legend =  new L.Control.Legend({
+		position: 'bottomright',
+	});
 
-	</script>
+	mymap.addControl(Legend);
+	$(".legend-container").append( $("#legend") );
+</script>
 </body>
 </html>
